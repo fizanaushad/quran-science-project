@@ -22,11 +22,21 @@ topics = df["Scientific Topic"].dropna().unique().tolist()
 topics.sort()
 selected_topic = st.sidebar.selectbox("Choose a scientific topic:", ["All"] + topics)
 
-# Filter data
+# Search bar
+search_query = st.text_input("🔎 Search by Verse/Translation/Explanation:").lower()
+
+# Filter by topic
 if selected_topic != "All":
     filtered_df = df[df["Scientific Topic"] == selected_topic]
 else:
     filtered_df = df
+
+# Apply search filter
+if search_query:
+    filtered_df = filtered_df[
+        filtered_df.apply(lambda row: search_query in str(row['Verse/Reference']).lower()
+                                        or search_query in str(row['Translation']).lower()
+                                        or search_query in str(row['Explanation']).lower(), axis=1)]
 
 # Display entries
 for idx, row in filtered_df.iterrows():
